@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!--script src="../jquery-1.10.2.min.js"></script-->
+    <script src="./scripts/jquery-1.11.0.js"></script>
+    <script src="./scripts/jquery-ui.js"></script>
+    <script src="./scripts/flip.js"></script>
+
+    <title>Card Game</title>
+    <style type="text/css">
+        body {
+            margin: 0 100px;
+        }
+
+        .card {
+            width: 100px;
+            height: 160px;
+            margin: 25px;
+            display: inline-block;
+            border: 1px white solid;
+        }
+
+        .front,
+        .back {
+            border: 2px white solid;
+            padding: 0px;
+        }
+
+        .front {
+            background-color: #ccc;
+        }
+
+        .back {
+            background-color: none;
+        }
+    </style>
+</head>
+
+<body>
+    <square></square>
+    <h1>JOORGANAUT SAYS: PICK AN ACE IN 3 TRIES</h1>
+    <h2>The Card you Clicked is <strong><label id='CardName'></label></strong></h2>
+    <script type="text/javascript">
+        var cardCount = 18;
+        var numberArray = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'ace', 'jack', 'queen', 'jack'];
+        var cardTypeArray = ['clubs', 'diamonds', 'hearts', 'spades'];
+
+        for (i = 0; i < cardCount; i++) {
+            var randomCard = Math.floor((Math.random() * numberArray.length - 1) + 1);
+            var randomCardType = Math.floor((Math.random() * cardTypeArray.length - 1) + 1);
+            var cardPath = `./img/cards/${numberArray[randomCard]}_of_${cardTypeArray[randomCardType]}.svg`;
+            var iDiv = document.createElement('div');
+            iDiv.id = 'card' + i;
+            iDiv.className = 'card';
+            document.getElementsByTagName('body')[0].appendChild(iDiv);
+
+            // Now create front div and append to iDiv
+            var frontDiv = document.createElement('div');
+            frontDiv.id = 'front' + i;
+            frontDiv.className = 'front';
+            var frontImg = document.createElement('img');
+            frontImg.id = 'frontImg' + i;
+            frontImg.src = './img/cards/black_joker.svg';
+            frontImg.style.height = '100%';
+            frontImg.style.width = '100%';
+            frontDiv.appendChild(frontImg);
+            frontDiv.setAttribute('onclick', `flipCard('${cardPath}')`);
+            // The variable iDiv is still good... Just append to it.
+            iDiv.appendChild(frontDiv);
+
+            // Now create back div and append to iDiv
+            var backDiv = document.createElement('div');
+            backDiv.id = 'back' + i;
+            backDiv.className = 'back';
+            var backImg = document.createElement('img');
+            backImg.id = 'backImg' + i;
+            backImg.src = cardPath;
+            backImg.style.height = '100%';
+            backImg.style.width = '100%';
+            backDiv.appendChild(backImg);
+            iDiv.appendChild(backDiv);
+        }
+        var clickCount = 0;
+        var realName = {};
+        debugger;
+        var flipCard = function (card) {
+            clickCount++;
+            var splitString = card.split('/');
+            var fileName = splitString[splitString.length - 1].split('.')[0];
+            realName = fileName.replace('_', ' ').replace('_', ' ');
+            $("#CardName").text(realName);
+           
+        }
+
+        $(function () {
+            $(".card").flip({
+                trigger: "click"
+            });
+        });
+        debugger;
+        $('.card').on('flip:done', function () {
+             console.log(clickCount + ' ' + realName);
+            if (realName.indexOf('ace') !== -1) {
+                alert('You have found an ACE');
+                //console.log(card);
+                return;
+            }
+            if (clickCount >= 3) {
+                alert('You have Exceeded your tries');
+                location.reload(true);
+            }
+            var options = {};
+            $("#"+this.id).effect('fold', options, 500, callback("#"+this.id));
+            
+            console.log('This is the after flip action')
+        });
+         function callback(id) {
+            setTimeout(function () {
+                $(id).fadeIn();
+            }, 1000);
+        };
+       var POSTTest = function () {
+            return $http({
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                url: 'http://www.wcfdemo.somee.com/ProductService.svc/LoadAllProductDetail',
+                data: {}
+            });
+        }
+    </script>    
+</body>
+
+</html>
